@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Github, Copy, History, ShieldCheck, Settings } from 'lucide-react';
+import { Download, Github, Copy, History, ShieldCheck, Settings, ExternalLink } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const backupMethods = [
@@ -20,6 +20,12 @@ const backupMethods = [
     description: "現在の良好な状態をそのまま残し、新しいコピーを作成して編集を続けることができます。",
     icon: <Copy className="w-6 h-6 text-emerald-500" />,
     steps: ["AI Studioのダッシュボードに戻る", "アプリのカードにある「...」メニューから「Remix」を選択"]
+  },
+  {
+    title: "アプリを共有 (Share)",
+    description: "GitHubのコードではなく、今見ているこの「動く画面」そのものを仲間に見せることができます。",
+    icon: <ExternalLink className="w-6 h-6 text-orange-500" />,
+    steps: ["右上の「Share」ボタンをクリック", "共有用URLを発行して仲間に送る"]
   }
 ];
 

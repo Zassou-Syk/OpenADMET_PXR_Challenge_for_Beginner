@@ -1,6 +1,6 @@
-import React from 'react';
-import { CheckCircle2, Circle, BookOpen, Code, FlaskConical, Github } from 'lucide-react';
-import { motion } from 'motion/react';
+import React, { useState } from 'react';
+import { CheckCircle2, Circle, BookOpen, Code, FlaskConical, Github, Terminal, ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const steps = [
   {
@@ -10,7 +10,24 @@ const steps = [
     resources: [
       { name: "Python公式チュートリアル", url: "https://docs.python.org/ja/3/tutorial/" },
       { name: "Pandas 10分間入門", url: "https://pandas.pydata.org/docs/user_guide/10min.html" }
-    ]
+    ],
+    exercise: {
+      title: "演習：PXRチャレンジのデータを読み込んでみよう",
+      description: "Hugging Faceで公開されているPXRチャレンジのデータセット（train.csv と test.csv）をpandasで読み込み、データの最初の5行を表示してみましょう。",
+      hint: "Hugging FaceのRaw URL（resolve/main/...）を使用すると、直接pandasで読み込むことができます。",
+      code: `import pandas as pd
+
+# Hugging FaceのRaw URL
+train_url = "https://huggingface.co/datasets/openadmet/pxr-challenge-train-test/resolve/main/train.csv"
+test_url = "https://huggingface.co/datasets/openadmet/pxr-challenge-train-test/resolve/main/test.csv"
+
+# データの読み込み
+train_df = pd.read_csv(train_url)
+test_df = pd.read_csv(test_url)
+
+# 最初の5行を表示
+print(train_df.head())`
+    }
   },
   {
     title: "Step 2: Google AI StudioとGemini API",
@@ -91,11 +108,59 @@ export default function Roadmap() {
                     </a>
                   ))}
                 </div>
+
+                {step.exercise && (
+                  <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Terminal className="w-5 h-5 text-slate-700" />
+                      <h4 className="font-bold text-slate-900">{step.exercise.title}</h4>
+                    </div>
+                    <p className="text-sm text-slate-600 mb-4">{step.exercise.description}</p>
+                    
+                    <div className="flex items-center gap-2 mb-4 p-3 bg-amber-50 rounded-lg border border-amber-100">
+                      <Lightbulb className="w-4 h-4 text-amber-600" />
+                      <p className="text-xs text-amber-700"><strong>ヒント:</strong> {step.exercise.hint}</p>
+                    </div>
+
+                    <SolutionToggle code={step.exercise.code} />
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function SolutionToggle({ code }: { code: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+      >
+        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        解答例を確認する
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <pre className="p-4 bg-slate-900 text-slate-100 rounded-lg text-xs font-mono overflow-x-auto">
+              <code>{code}</code>
+            </pre>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
