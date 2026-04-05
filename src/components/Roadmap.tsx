@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Circle, BookOpen, Code, FlaskConical, Github, Terminal, ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
+import { CheckCircle2, Circle, BookOpen, Code, FlaskConical, Github, Terminal, ChevronDown, ChevronUp, Lightbulb, Cloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const steps = [
+  {
+    title: "Step 0: 実行環境の準備 (Google Colab)",
+    description: "ブラウザだけでPythonを実行できるGoogle Colabの準備をします。AI Studioと連携させるためのAPIキーの設定方法を学びます。",
+    icon: <Cloud className="w-6 h-6 text-orange-500" />,
+    resources: [
+      { name: "Google Colab 公式サイト", url: "https://colab.research.google.com/" },
+      { name: "Gemini APIキーの取得", url: "https://aistudio.google.com/app/apikey" }
+    ]
+  },
   {
     title: "Step 1: Pythonの基礎を学ぶ",
     description: "データ分析の標準言語であるPythonの基本文法、リスト、辞書、そしてデータ操作ライブラリのPandasを学びます。",

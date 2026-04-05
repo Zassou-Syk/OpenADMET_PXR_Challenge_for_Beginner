@@ -3,6 +3,7 @@ import { FlaskConical, GraduationCap, BookOpen, ExternalLink, Github, Database, 
 import Roadmap from './components/Roadmap';
 import GeminiPredictor from './components/GeminiPredictor';
 import EnvironmentGuide from './components/EnvironmentGuide';
+import ColabSetupGuide from './components/ColabSetupGuide';
 import LearningFocus from './components/LearningFocus';
 import FAQ from './components/FAQ';
 import BackupGuide from './components/BackupGuide';
@@ -21,6 +22,7 @@ export default function App() {
             <span className="font-bold text-xl tracking-tight">PXR Challenge Assistant</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
+            <a href="#colab-setup" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Colab準備</a>
             <a href="#roadmap" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">ロードマップ</a>
             <a href="#learning-focus" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">学習のポイント</a>
             <a href="#faq" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Q&A</a>
@@ -59,6 +61,11 @@ export default function App() {
             Google AI Studio、GitHub、Pythonが初めての方でも大丈夫です。
             このアシスタントが、PXR誘導能予測チャレンジへの第一歩をサポートします。
           </motion.p>
+        </section>
+
+        {/* Colab Setup Section */}
+        <section id="colab-setup" className="scroll-mt-24">
+          <ColabSetupGuide />
         </section>
 
         {/* Roadmap Section */}
