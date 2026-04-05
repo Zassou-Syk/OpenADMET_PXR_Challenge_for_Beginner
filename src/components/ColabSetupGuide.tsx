@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cloud, Key, Play, ExternalLink, Info, CheckCircle2, Terminal, BookOpen } from 'lucide-react';
+import { Cloud, Key, Play, ExternalLink, Info, CheckCircle2, Terminal, BookOpen, AlertTriangle } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export default function ColabSetupGuide() {
@@ -64,6 +64,16 @@ export default function ColabSetupGuide() {
                 APIキーを取得する
               </a>
             </div>
+            <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100 space-y-3">
+              <p className="text-sm font-bold text-blue-800 flex items-center gap-2">
+                <Info className="w-4 h-4" /> 「プロジェクトを選択」と表示されたら？
+              </p>
+              <p className="text-xs text-blue-700 leading-relaxed">
+                <strong>「新しいプロジェクトでAPIキーを作成する (Create API key in new project)」</strong> をクリックしてください。
+                <br /><br />
+                ※もし <code>404 NOT_FOUND</code> エラーが出る場合は、古いプロジェクトの設定が原因の可能性があります。その場合も、このボタンから<strong>新しいプロジェクトとしてキーを作り直す</strong>と解決します。
+              </p>
+            </div>
             <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-start gap-3">
               <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <p className="text-sm text-amber-800">
@@ -92,9 +102,9 @@ export default function ColabSetupGuide() {
                 <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 font-bold text-slate-400">2</div>
                 <p className="text-sm">「新しいシークレットを追加」をクリックし、名前に <code>GOOGLE_API_KEY</code>、値に取得したAPIキーを入力します。</p>
               </div>
-              <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 font-bold text-slate-400">3</div>
-                <p className="text-sm"><strong>「ノートブックからのアクセス」</strong> のスイッチをONにします。</p>
+              <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-200 ring-2 ring-blue-400">
+                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 font-bold">3</div>
+                <p className="text-sm font-bold text-blue-900">重要：右側の「ノートブックからのアクセス」スイッチを必ず「ON（青色）」にしてください！</p>
               </div>
             </div>
           </div>
@@ -109,24 +119,88 @@ export default function ColabSetupGuide() {
             <h3 className="text-2xl font-bold text-slate-900">実際にコードを動かしてみる</h3>
           </div>
           <div className="space-y-4 text-slate-600">
-            <p>Colabのセルに以下のコードを貼り付けて、再生ボタン（実行）を押してみましょう！</p>
+            <p>以下の「エラーに強いコード」を貼り付けて、実行してみましょう。使えるモデルを自動で探します。</p>
             <div className="bg-slate-900 p-6 rounded-2xl font-mono text-blue-300 overflow-x-auto">
               <pre className="text-xs">
-                {`# 1. ライブラリのインストール
-!pip install -q -U google-generativeai
+                {`# 1. 最新のライブラリをインストール
+!pip install -q -U google-genai
 
-# 2. APIキーの読み込み
+# 2. クライアントの準備
 from google.colab import userdata
-import google.generativeai as genai
+from google import genai
 
 api_key = userdata.get('GOOGLE_API_KEY')
-genai.configure(api_key=api_key)
-
-# 3. Geminiに質問してみる
-model = genai.GenerativeModel('gemini-1.5-flash')
-response = model.generate_content("こんにちは！自己紹介してください。")
-print(response.text)`}
+if not api_key:
+    print("❌ APIキーが設定されていません。Step 3のスイッチを確認してください。")
+else:
+    client = genai.Client(api_key=api_key)
+    
+    # 3. 使えるモデルを順番に試して実行
+    try:
+        # 試行するモデルのリスト (2026年の最新モデルを優先)
+        # ユーザー環境で成功が確認された gemini-2.5-flash を先頭に配置
+        models_to_try = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-flash']
+        
+        success = False
+        for model_name in models_to_try:
+            try:
+                print(f"🚀 {model_name} で接続テスト中...")
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents="こんにちは！自己紹介してください。"
+                )
+                print(f"✅ {model_name} で成功しました！\\n\\n{response.text}")
+                success = True
+                break
+            except Exception:
+                continue
+        
+        if not success:
+            print("❌ 使えるモデルが見つかりませんでした。APIキーを作り直してください。")
+            
+    except Exception as e:
+        print(f"❌ 予期せぬエラーが発生しました: {e}")`}
               </pre>
+            </div>
+            <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 space-y-3">
+              <p className="text-sm font-bold text-amber-800 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" /> RESOURCE_EXHAUSTED (429) エラーが出たら？
+              </p>
+              <div className="text-xs text-amber-700 leading-relaxed">
+                これは「無料枠の制限（クォータ）」に達したことを意味します。
+                <br /><br />
+                <strong>対処法：</strong>
+                <ul className="list-disc pl-4 mt-1 space-y-1">
+                  <li><strong>少し待つ：</strong> 1分間に送れる回数制限に達しただけなら、1分待てば再び動くようになります。</li>
+                  <li><strong>モデルを変える：</strong> <code>gemini-2.0-flash</code> でエラーが出る場合は、より安定している <code>gemini-1.5-flash</code> に書き換えてみてください。</li>
+                </ul>
+              </div>
+            </div>
+            <div className="p-6 bg-slate-50 rounded-3xl border border-slate-200 space-y-4">
+              <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-600" /> エラーが解決しない場合のチェックリスト
+              </h4>
+              <div className="space-y-3 text-sm text-slate-600">
+                <div className="p-4 bg-white rounded-2xl border border-slate-100">
+                  <p className="font-bold text-slate-800 mb-1">Q. <code>limit: 0</code> というエラーが出る</p>
+                  <p className="text-xs leading-relaxed">
+                    アカウントの利用枠がゼロになっています。<strong>学校や会社のGoogleアカウント</strong>を使っていませんか？
+                    管理者が制限している場合、APIは使えません。<strong>個人の @gmail.com アカウント</strong>での作成を強くおすすめします。
+                  </p>
+                </div>
+                <div className="p-4 bg-white rounded-2xl border border-slate-100">
+                  <p className="font-bold text-slate-800 mb-1">Q. <code>404 NOT_FOUND</code> が消えない</p>
+                  <p className="text-xs leading-relaxed">
+                    APIキーが古いプロジェクトに紐付いている可能性があります。AI Studioで <strong>「Create API key in new project」</strong> を押し、完全に新しいプロジェクトとしてキーを発行し直してください。
+                  </p>
+                </div>
+                <div className="p-4 bg-white rounded-2xl border border-slate-100">
+                  <p className="font-bold text-slate-800 mb-1">Q. 18歳未満のアカウントですか？</p>
+                  <p className="text-xs leading-relaxed">
+                    Googleの規約により、18歳未満のアカウントではGemini APIの利用が制限される場合があります。
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-start gap-3">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
@@ -145,27 +219,27 @@ print(response.text)`}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <a 
-              href="https://zenn.dev/google_cloud_jp/articles/google-ai-studio-colab" 
+              href="https://ai.google.dev/gemini-api/docs/quickstart?hl=ja" 
               target="_blank" 
               rel="noopener noreferrer"
               className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-blue-300 transition-all group"
             >
-              <div className="font-bold text-slate-900 mb-2 group-hover:text-blue-600">AI StudioとColabの連携（Zenn）</div>
-              <p className="text-xs text-slate-500 mb-4">画像付きで非常に分かりやすく解説されているブログ記事です。</p>
+              <div className="font-bold text-slate-900 mb-2 group-hover:text-blue-600">Gemini API クイックスタート</div>
+              <p className="text-xs text-slate-500 mb-4">Google公式のチュートリアルです。Colabでの実行方法が丁寧に解説されています。</p>
               <div className="text-blue-600 text-xs font-bold flex items-center gap-1">
-                記事を読む <ExternalLink className="w-3 h-3" />
+                公式ドキュメントを読む <ExternalLink className="w-3 h-3" />
               </div>
             </a>
             <a 
-              href="https://ai.google.dev/gemini-api/docs/ai-studio-quickstart?hl=ja" 
+              href="https://findy-tools.io/articles/googlecloud-third/125" 
               target="_blank" 
               rel="noopener noreferrer"
               className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-blue-300 transition-all group"
             >
-              <div className="font-bold text-slate-900 mb-2 group-hover:text-blue-600">公式クイックスタート</div>
-              <p className="text-xs text-slate-500 mb-4">Google公式のドキュメントです。最新の情報を確認できます。</p>
+              <div className="font-bold text-slate-900 mb-2 group-hover:text-blue-600">Gemini API × Colab 徹底解説 (Findy Tools)</div>
+              <p className="text-xs text-slate-500 mb-4">APIキーの取得からColabでの実行まで、非常に分かりやすく整理された解説記事です。</p>
               <div className="text-blue-600 text-xs font-bold flex items-center gap-1">
-                公式ドキュメント <ExternalLink className="w-3 h-3" />
+                解説記事を読む <ExternalLink className="w-3 h-3" />
               </div>
             </a>
           </div>
