@@ -145,21 +145,27 @@ export default function App() {
               title="OpenADMET Challenge"
               description="チャレンジの公式発表と詳細。データセットの入手方法もこちらから。"
               icon={<Database className="w-6 h-6" />}
-              url="https://openadmet.ghost.io/announcing-the-next-openadmet-blind-challenge-predicting-pxr-induction/"
+              links={[{ label: "公式サイト", url: "https://openadmet.ghost.io/announcing-the-next-openadmet-blind-challenge-predicting-pxr-induction/" }]}
               color="bg-emerald-50 text-emerald-600"
             />
             <ResourceCard
               title="Google AI Studio"
               description="Geminiモデルをノーコードで試せる環境。プロンプト作成に最適です。"
               icon={<LayoutDashboard className="w-6 h-6" />}
-              url="https://aistudio.google.com/"
+              links={[
+                { label: "AI Studioを開く", url: "https://aistudio.google.com/" },
+                { label: "日本語クイックスタート", url: "https://ai.google.dev/gemini-api/docs/ai-studio-quickstart?hl=ja" }
+              ]}
               color="bg-blue-50 text-blue-600"
             />
             <ResourceCard
               title="RDKit Documentation"
               description="Pythonで化学構造を扱うための必須ライブラリ。SMILESの処理に使います。"
               icon={<Code className="w-6 h-6" />}
-              url="https://www.rdkit.org/docs/index.html"
+              links={[
+                { label: "English Docs", url: "https://www.rdkit.org/docs/index.html" },
+                { label: "日本語ドキュメント", url: "https://rdkit.org/docs_jp/index.html" }
+              ]}
               color="bg-purple-50 text-purple-600"
             />
           </div>
@@ -181,24 +187,40 @@ export default function App() {
   );
 }
 
-function ResourceCard({ title, description, icon, url, color }: { title: string; description: string; icon: React.ReactNode; url: string; color: string }) {
+interface ResourceLink {
+  label: string;
+  url: string;
+}
+
+function ResourceCard({ title, description, icon, links, color }: { title: string; description: string; icon: React.ReactNode; links: ResourceLink[]; color: string }) {
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group p-8 rounded-3xl bg-white border border-slate-200 hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/5 transition-all space-y-4"
-    >
+    <div className="group p-8 rounded-3xl bg-white border border-slate-200 hover:shadow-xl hover:shadow-blue-500/5 transition-all space-y-4">
       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${color} group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
-      <div className="space-y-2">
-        <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors flex items-center gap-2">
-          {title}
-          <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </h3>
-        <p className="text-slate-600 leading-relaxed">{description}</p>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+            {title}
+          </h3>
+          <p className="text-slate-600 leading-relaxed text-sm">{description}</p>
+        </div>
+        
+        <div className="flex flex-wrap gap-2 pt-2">
+          {links.map((link, i) => (
+            <a
+              key={i}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 text-xs font-bold hover:bg-blue-600 hover:text-white transition-all border border-slate-100"
+            >
+              {link.label}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          ))}
+        </div>
       </div>
-    </a>
+    </div>
   );
 }

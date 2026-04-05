@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, HelpCircle, MessageSquare, Code, Table, FlaskConical } from 'lucide-react';
+import { ChevronDown, ChevronUp, HelpCircle, MessageSquare, Code, Table, FlaskConical, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import IlocExplanation from './IlocExplanation';
 
@@ -57,6 +57,25 @@ export default function FAQ() {
       </div>
 
       <div className="space-y-4 max-w-4xl mx-auto">
+        <FAQItem 
+          question="GitHubを公開（Public）にする際の注意点は？" 
+          icon={<ShieldCheck className="w-5 h-5" />}
+        >
+          <div className="prose prose-slate max-w-none text-slate-600 space-y-4">
+            <p>
+              勉強会の仲間と共有するために公開にするのは素晴らしいことですが、以下の2点に注意しましょう。
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <strong>APIキーの漏洩防止:</strong> <code>.env</code> ファイルなどの秘密情報は絶対にアップロードしないでください。AI Studioの <code>.gitignore</code> が守ってくれますが、コード内に直接キーを書かないよう注意が必要です。
+              </li>
+              <li>
+                <strong>データの再配布制限:</strong> チャレンジのデータセット（CSV等）自体を公開して良いかは規定を確認しましょう。不安な場合はデータファイルだけを除外設定（.gitignore）にするのが安全です。
+              </li>
+            </ul>
+          </div>
+        </FAQItem>
+
         <FAQItem 
           question="df.iloc[3:5, 0:2] の指定範囲はどう決まる？" 
           icon={<Table className="w-5 h-5" />}
